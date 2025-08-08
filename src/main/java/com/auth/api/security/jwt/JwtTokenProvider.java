@@ -1,8 +1,7 @@
 package com.auth.api.security.jwt;
-
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.auth.api.dto.security.TokenDTO;
 import com.auth.api.exception.InvalidJwtAuthenticationException;
@@ -29,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class JwtTokenProvider {
 
 	@Value("${security.jwt.token.secret-key:secret}")
-	private String secretKey = "53cr37";
+	private String secretKey = "uH12jPqz0W+o+fSde9q5Tf0mXEtmCqKnm2Vp3xczxUg=";
 
 	@Value("${security.jwt.token.expire-lenght:3600000}")
 	private long validityInMilliseconds = 3600000; // 1h
@@ -40,7 +38,6 @@ public class JwtTokenProvider {
 
 	@PostConstruct
 	protected void init() {
-		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 		algorithm = Algorithm.HMAC256(secretKey.getBytes());
 	}
 
@@ -66,13 +63,13 @@ public class JwtTokenProvider {
 
 	private String getRefreshToken(String nick, List<String> roles, Date now, Date validity) {
 		Date refreshTokenValidity = new Date(now.getTime() + (validityInMilliseconds * 3));
-		return JWT.create().withClaim("roles", roles).withIssuedAt(now).withExpiresAt(refreshTokenValidity).withSubject(nick)
+		return JWT.create().withClaim("roles", roles).withJWTId(UUID.randomUUID().toString()).withIssuedAt(now).withExpiresAt(refreshTokenValidity).withSubject(nick)
 				.sign(algorithm);
 	}
 
 	private String getAccessToken(String nick, List<String> roles, Date now, Date validity) {
 		Date refreshTokenValidity = new Date(now.getTime() + validityInMilliseconds);
-		return JWT.create().withClaim("roles", roles).withIssuedAt(now).withExpiresAt(refreshTokenValidity)
+		return JWT.create().withClaim("roles", roles).withJWTId(UUID.randomUUID().toString()).withIssuedAt(now).withExpiresAt(refreshTokenValidity)
 				.withSubject(nick).sign(algorithm);
 	}
 
@@ -83,7 +80,7 @@ public class JwtTokenProvider {
 		return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 	}
 	
-	private DecodedJWT decodedToken(String token) {
+	public DecodedJWT decodedToken(String token) {
 		Algorithm alg = Algorithm.HMAC256(secretKey.getBytes());
 		JWTVerifier verifier = JWT.require(alg).build();
         return verifier.verify(token);

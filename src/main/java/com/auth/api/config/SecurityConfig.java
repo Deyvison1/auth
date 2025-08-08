@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.auth.api.security.jwt.JwtTokenFilter;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,8 +33,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true,  prePostEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
+
+	@Value("${internal.token}")
+	private String internalToken;
+
+	@Value("${internal.key}")
+	private String internalKey;
 
 	private final JwtTokenProvider jwtTokenProvider;
 
@@ -45,7 +51,7 @@ public class SecurityConfig {
 		Map<String, PasswordEncoder> encoders = new HashMap<String, PasswordEncoder>();
 		encoders.put("pbkdf2", pbkdf2Encoder);
 		DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder("pbkdf2", encoders);
-		
+
 		passwordEncoder.setDefaultPasswordEncoderForMatches(pbkdf2Encoder);
 		return passwordEncoder;
 	}
@@ -56,32 +62,23 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	SecurityFilterChain  securityFilterChain(HttpSecurity http) throws Exception {
-		JwtTokenFilter customFilter = new JwtTokenFilter(jwtTokenProvider);
-		return http
-				.csrf(AbstractHttpConfigurer::disable)
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		JwtTokenFilter customFilter = new JwtTokenFilter(internalToken, internalKey, jwtTokenProvider);
+		return http.csrf(AbstractHttpConfigurer::disable)
 				.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement(
-						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				)
-				.authorizeHttpRequests(
-						authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(
-								"/auth/refresh",
-								"/auth/signin",
-								"/auth/login",
-								"/auth"
-						).permitAll()
-								.anyRequest().authenticated()
-				)
-				.cors(cors -> corsConfigurationSource())
-				.build();
+						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+						.requestMatchers("/auth/refresh", "/auth/signin", "/auth/login", "/auth/logout").permitAll()
+						.anyRequest().authenticated())
+				.cors(cors -> corsConfigurationSource()).build();
 	}
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 
-		//TODO: substituir * pelos valores corretos
+		// TODO: substituir * pelos valores corretos
 		configuration.setAllowedOrigins(Collections.singletonList("*"));
 		configuration.setAllowedMethods(Collections.singletonList("*"));
 		configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -90,5 +87,10 @@ public class SecurityConfig {
 		source.registerCorsConfiguration("/**", configuration);
 
 		return source;
+	}
+
+	@Bean
+	public JwtTokenFilter jwtTokenFilter() {
+		return new JwtTokenFilter(internalToken, internalKey, jwtTokenProvider);
 	}
 }

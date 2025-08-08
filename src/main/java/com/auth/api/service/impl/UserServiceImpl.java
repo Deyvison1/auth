@@ -1,6 +1,8 @@
 package com.auth.api.service.impl;
 
+import com.auth.api.dto.UserDTO;
 import com.auth.api.exception.NotFoundEntityException;
+import com.auth.api.mapper.UserMapper;
 import com.auth.api.models.User;
 import com.auth.api.repository.IUserReposotiry;
 import com.auth.api.service.IUserService;
@@ -19,54 +21,55 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserServiceImpl implements IUserService, UserDetailsService {
 
-    private final IUserReposotiry repository;
+	private final IUserReposotiry repository;
+	private final UserMapper mapper;
 
-    @Override
-    public User save(User user) {
-        return repository.save(user);
-    }
+	@Override
+	public UserDTO save(UserDTO userDTO) {
+		User entity = mapper.toEntity(userDTO);
+		return mapper.toDto(repository.save(entity));
+	}
 
-    @Override
-    public User update(UUID id, User user) throws NotFoundEntityException {
-    	User updatedUser = findById(id);
-        if(thereHaveBeenChanges(updatedUser, user)) {
-            return repository.save(monthEntity(updatedUser, user));
-        }
-        return updatedUser;
-    }
+	@Override
+	public UserDTO update(UUID id, UserDTO user) throws NotFoundEntityException {
+		User updatedUser = findById(id);
+		if (thereHaveBeenChanges(updatedUser, user)) {
+			return mapper.toDto(repository.save(monthEntity(updatedUser, user)));
+		}
+		return mapper.toDto(updatedUser);
+	}
 
+	public UserDTO findByNick(String nick) {
+		return mapper.toDto(repository.findByNick(nick));
+	}
 
-    public User findByNick(String nick) {
-        return repository.findByNick(nick);
-    }
+	@Override
+	public List<UserDTO> findAll() {
+		return mapper.listToDto(repository.findAll());
+	}
 
-    @Override
-    public List<User> findAll() {
-        return repository.findAll();
-    }
+	private User monthEntity(User userSave, UserDTO userRequest) {
+		userSave.setNick(userRequest.getNick());
+		userSave.setEmail(userRequest.getEmail());
+		return userSave;
+	}
 
-    private User monthEntity(User userSave, User userRequest) {
-        userSave.setNick(userRequest.getNick());
-        userSave.setEmail(userRequest.getEmail());
-        return userSave;
-    }
+	public User findById(UUID id) throws NotFoundEntityException {
+		return repository.findById(id).orElseThrow(NotFoundEntityException::new);
+	}
 
-
-    public User findById(UUID id) throws NotFoundEntityException {
-        return repository.findById(id).orElseThrow(NotFoundEntityException::new);
-    }
-
-
-    private Boolean thereHaveBeenChanges(User userSave, User userRequest) {
-        if(!Objects.equals(userSave.getNick(), userRequest.getNick()) || !Objects.equals(userSave.getPassword(), userRequest.getPassword()) || !Objects.equals(userSave.getEmail(), userRequest.getEmail())) {
-            return true;
-        }
-        return false;
-    }
+	private Boolean thereHaveBeenChanges(User userSave, UserDTO userRequest) {
+		if (!Objects.equals(userSave.getNick(), userRequest.getNick())
+				|| !Objects.equals(userSave.getPassword(), userRequest.getPassword())
+				|| !Objects.equals(userSave.getEmail(), userRequest.getEmail())) {
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String nick) throws UsernameNotFoundException {
-		User user = findByNick(nick);
-		return user;
+		UserDTO user = findByNick(nick);
+		return mapper.toEntity(user);
 	}
 }

@@ -1,13 +1,11 @@
 package com.auth.api.service;
 
-import com.auth.api.exception.NotFoundEntityException;
-import com.auth.api.models.Role;
-
+import com.auth.api.dto.RoleDTO;
 import java.util.UUID;
 
 public interface IRoleService {
 
-    Role save(Role role);
-    Role update(UUID id, Role role);
+	RoleDTO save(RoleDTO role);
+	RoleDTO update(UUID id, RoleDTO role);
     void delete(UUID id);
 }

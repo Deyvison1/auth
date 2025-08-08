@@ -72,7 +72,7 @@ public class User extends IdBase implements UserDetails {
 			@JoinColumn(name = "roles_uuid") })
 	private List<Role> roles;
 
-	public List<String> getRoles() {
+	public List<String> getRolesName() {
 		List<String> namesRole = new ArrayList<String>();
 		for (Role role : roles) {
 			namesRole.add(role.getName());

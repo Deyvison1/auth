@@ -1,7 +1,7 @@
 package com.auth.api.controller;
 
+import com.auth.api.dto.UserDTO;
 import com.auth.api.exception.NotFoundEntityException;
-import com.auth.api.models.User;
 import com.auth.api.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +20,19 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<UserDTO> register(@RequestBody UserDTO user) {
         return ResponseEntity.ok(service.save(user));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<UserDTO>> findAll() {
         return ResponseEntity.ok().body(service.findAll());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable UUID id, @RequestBody User user) throws NotFoundEntityException {
+    public ResponseEntity<UserDTO> update(@PathVariable UUID id, @RequestBody UserDTO user) throws NotFoundEntityException {
         return ResponseEntity.ok(service.update(id, user));
     }
 }
