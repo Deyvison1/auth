@@ -69,7 +69,7 @@ public class SecurityConfig {
 				.sessionManagement(
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-						.requestMatchers("/auth/refresh", "/auth/signin", "/auth/login", "/auth/logout").permitAll()
+						.requestMatchers("/api/auth/refresh", "/api/auth/signin", "/api/auth", "/api/auth/logout").permitAll()
 						.anyRequest().authenticated())
 				.cors(cors -> corsConfigurationSource()).build();
 	}

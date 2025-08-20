@@ -2,6 +2,8 @@ package com.auth.api.exception;
 
 import com.auth.api.exception.dto.StandardErrorDTO;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -19,4 +21,12 @@ public class ResourceExceptionHandler {
         StandardErrorDTO err = StandardErrorDTO.builder().timestamp(Instant.now()).status(status.value()).error(error).message(e.getMessage()).path(request.getRequestURI()).build();
         return ResponseEntity.status(status).body(err);
     }
+    
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String message = "Nickname already exists"; // ou pegue do ex.getMessage() se quiser mais técnico
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
+    }
+
+    
 }

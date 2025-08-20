@@ -1,13 +1,6 @@
 server:
   port: 8082
 
-logging:
-  level:
-    root: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-    com.auth: DEBUG
-
 internal:
   token: c523db8c7dafcaf567a28d7d910f985ffdfff52d2e5850f18062f8c82e338e6b
   key: X-Internal-Token

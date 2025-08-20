@@ -3,6 +3,7 @@ package com.auth.api.service.impl;
 import com.auth.api.dto.UserDTO;
 import com.auth.api.dto.security.AccountCredentialsDTO;
 import com.auth.api.dto.security.TokenDTO;
+import com.auth.api.exception.DataBaseException;
 import com.auth.api.exception.NotFoundEntityException;
 import com.auth.api.mapper.UserMapper;
 import com.auth.api.models.User;
@@ -11,6 +12,8 @@ import com.auth.api.security.jwt.JwtTokenProvider;
 import com.auth.api.service.IAuthService;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+
+import org.postgresql.util.PSQLException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,17 +54,13 @@ public class AuthServiceImpl implements IAuthService {
 
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
-		try {
-			userDTO.setPassword(generateHashdPassword(userDTO.getPassword()));
-			userDTO.setAccountNonExpired(true);
-			userDTO.setAccountNonLocked(true);
-			userDTO.setAccountNonExpired(true);
-			userDTO.setEnabled(true);
-			User entity = mapper.toEntity(userDTO);
-			return mapper.toDto(userReposotiry.save(entity));
-		} catch (Exception e) {
-			throw new NotFoundEntityException();
-		}
+		userDTO.setPassword(generateHashdPassword(userDTO.getPassword()));
+		userDTO.setAccountNonExpired(true);
+		userDTO.setAccountNonLocked(true);
+		userDTO.setAccountNonExpired(true);
+		userDTO.setEnabled(true);
+		User entity = mapper.toEntity(userDTO);
+		return mapper.toDto(userReposotiry.save(entity));
 	}
 
 	@Override
