@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface IUserReposotiry extends JpaRepository<User, UUID> {
 
 	User findByNick(String nick);
+
 }

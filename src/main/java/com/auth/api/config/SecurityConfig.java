@@ -1,6 +1,5 @@
 package com.auth.api.config;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,10 +25,6 @@ import com.auth.api.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -69,24 +64,8 @@ public class SecurityConfig {
 				.sessionManagement(
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-						.requestMatchers("/api/auth/refresh", "/api/auth/signin", "/api/auth", "/api/auth/logout").permitAll()
-						.anyRequest().authenticated())
-				.cors(cors -> corsConfigurationSource()).build();
-	}
-
-	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
-		CorsConfiguration configuration = new CorsConfiguration();
-
-		// TODO: substituir * pelos valores corretos
-		configuration.setAllowedOrigins(Collections.singletonList("*"));
-		configuration.setAllowedMethods(Collections.singletonList("*"));
-		configuration.setAllowedHeaders(Collections.singletonList("*"));
-
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-
-		return source;
+						.requestMatchers("/api/auth/refresh", "/api/auth/signin", "/api/users/create-user", "/api/auth/logout").permitAll()
+						.anyRequest().authenticated()).build();
 	}
 
 	@Bean

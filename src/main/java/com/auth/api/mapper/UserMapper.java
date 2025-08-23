@@ -20,16 +20,26 @@ public class UserMapper {
 	}
 
 	public UserDTO toDto(User entity) {
-		UserDTO dto = UserDTO.builder().accountNonExpired(entity.getAccountNonExpired())
-				.accountNonLocked(entity.getAccountNonLocked()).created(entity.getCreated()).email(entity.getEmail())
-				.enabled(entity.getEnabled()).fullName(entity.getFullName()).nick(entity.getNick())
-				.password(entity.getPassword()).updated(entity.getUpdated()).userName(entity.getUsername())
-				.roles(getRolesDTO(entity)).build();
+		UserDTO dto = new UserDTO();
+		dto.setUuid(entity.getUuid());
+		dto.setAccountNonExpired(entity.getAccountNonExpired());
+		dto.setAccountNonLocked(entity.getAccountNonLocked());
+		dto.setCreated(entity.getCreated());
+		dto.setEmail(entity.getEmail());
+
+		dto.setEnabled(entity.getEnabled());
+		dto.setFullName(entity.getFullName());
+		dto.setNick(entity.getNick());
+		dto.setPassword(entity.getPassword());
+		dto.setUpdated(entity.getUpdated());
+		dto.setUserName(entity.getUsername());
+		dto.setRoles(getRolesDTO(entity));
 		return dto;
 	}
 
 	public User toEntity(UserDTO dto) {
 		User entity = new User();
+		entity.setUuid(dto.getUuid());
 		entity.setAccountNonExpired(dto.getAccountNonExpired());
 		entity.setAccountNonLocked(dto.getAccountNonLocked());
 		entity.setCreated(dto.getCreated());

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,8 +30,14 @@ public class RoleController {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/{id}")	
 	public void delete(@PathVariable UUID id) {
 		service.delete(id);
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping
+	public ResponseEntity<List<RoleDTO>> findAll() {
+		return ResponseEntity.ok().body(service.findAll());
 	}
 }

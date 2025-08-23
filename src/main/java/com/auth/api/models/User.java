@@ -9,10 +9,10 @@ import java.util.List;
 import com.auth.api.models.base.IdBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.validation.constraints.Email;
@@ -25,7 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "auth")
 @Getter
 @Setter
 public class User extends IdBase implements UserDetails {
@@ -67,8 +67,8 @@ public class User extends IdBase implements UserDetails {
 	
 	public User() {}
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "users_roles", joinColumns = { @JoinColumn(name = "user_uuid") }, inverseJoinColumns = {
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "users_roles", schema = "auth", joinColumns = { @JoinColumn(name = "user_uuid") }, inverseJoinColumns = {
 			@JoinColumn(name = "roles_uuid") })
 	private List<Role> roles;
 

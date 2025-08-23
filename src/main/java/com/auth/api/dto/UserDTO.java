@@ -5,13 +5,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
+@RequiredArgsConstructor
 public class UserDTO extends BaseDTO implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 1L;

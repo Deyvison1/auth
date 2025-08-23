@@ -11,5 +11,8 @@ public interface IUserService {
 	UserDTO save(UserDTO user);
 	UserDTO update(UUID id, UserDTO user) throws NotFoundEntityException;
 	UserDTO findByNick(String nick);
+	UserDTO findByIdToDTO(UUID uuid);
     List<UserDTO> findAll();
+    void delete(UUID uuid);
+    UUID findUUidByNick(String nick);
 }

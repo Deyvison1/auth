@@ -1,6 +1,5 @@
 package com.auth.api.controller;
 
-import com.auth.api.dto.UserDTO;
 import com.auth.api.dto.security.AccountCredentialsDTO;
 import com.auth.api.dto.security.TokenDTO;
 import com.auth.api.service.IAuthService;
@@ -41,10 +40,5 @@ public class AuthController {
 		if (token == null)
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid client request!");
 		return ResponseEntity.ok().body(token);
-	}
-
-	@PostMapping
-	public ResponseEntity<UserDTO> register(@RequestBody UserDTO user) {
-		return ResponseEntity.ok(authService.createUser(user));
 	}
 }

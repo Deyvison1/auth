@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "roles", schema = "auth")
 @Getter
 @Setter
 public class Role extends IdBase implements GrantedAuthority {

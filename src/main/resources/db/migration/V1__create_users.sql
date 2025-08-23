@@ -4,7 +4,7 @@
 
 -- DROP TABLE public.users;
 
-CREATE TABLE IF NOT EXISTS public.users (
+CREATE TABLE IF NOT EXISTS auth.users (
                               account_non_expired bool NULL,
                               account_non_locked bool NULL,
                               enabled bool NULL,
@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS public.users (
 
 -- Permissions
 
-ALTER TABLE public.users OWNER TO postgres;
-GRANT ALL ON TABLE public.users TO postgres;
+ALTER TABLE auth.users OWNER TO postgres;
+GRANT ALL ON TABLE auth.users TO postgres;

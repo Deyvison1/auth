@@ -10,6 +10,7 @@ import com.auth.api.service.IRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -50,8 +51,19 @@ public class RoleServiceImpl implements IRoleService {
         findById(id);
         repository.deleteById(id);
     }
-
-    private Role findById(UUID id)  {
-        return repository.findById(id).orElseThrow(NotFoundEntityException::new);
+    
+    private Role findById(UUID id) {
+    	 return repository.findById(id).orElseThrow(NotFoundEntityException::new);
     }
+
+    @Override
+    public RoleDTO findByIdToDTO(UUID id)  {
+    	Role role = findById(id);
+    	return roleMapper.toDto(role);
+    }
+
+	@Override
+	public List<RoleDTO> findAll() {
+		return roleMapper.toDto(repository.findAll());
+	}
 }
