@@ -1,17 +1,22 @@
 package com.auth.api.service.impl;
 
-import com.auth.api.dto.RoleDTO;
+import com.auth.api.dto.MinUserDTO;
 import com.auth.api.dto.UserDTO;
+import com.auth.api.dto.UserFilter;
 import com.auth.api.exception.NotFoundEntityException;
+import com.auth.api.mapper.IRoleMapper;
 import com.auth.api.mapper.UserMapper;
 import com.auth.api.models.User;
 import com.auth.api.repository.IUserReposotiry;
-import com.auth.api.service.IRoleService;
+import com.auth.api.repository.UserSpecification;
 import com.auth.api.service.IUserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +47,7 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 
 	private final IUserReposotiry repository;
 	private final UserMapper mapper;
-	private final IRoleService roleService;
+	private final IRoleMapper roleMapper;
 
 	@Override
 	public UserDTO save(UserDTO userDTO) {
@@ -52,21 +57,11 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 	}
 
 	private void setUpEntitySave(UserDTO userDTO) {
-		setUpRole(userDTO);
 		userDTO.setPassword(generateHashdPassword(userDTO.getPassword()));
 		userDTO.setAccountNonExpired(true);
 		userDTO.setAccountNonLocked(true);
 		userDTO.setAccountNonExpired(true);
 		userDTO.setEnabled(true);
-	}
-
-	private void setUpRole(UserDTO userDTO) {
-		if (userDTO.getRoles() == null || userDTO.getRoles().isEmpty()) {
-			RoleDTO roleDTO = roleService.findByIdToDTO(uuidRoleDefault);
-			List<RoleDTO> listRoleDTO = new ArrayList<RoleDTO>();
-			listRoleDTO.add(roleDTO);
-			userDTO.setRoles(listRoleDTO);
-		}
 	}
 
 	@Override
@@ -83,13 +78,19 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 	}
 
 	@Override
-	public List<UserDTO> findAll() {
-		return mapper.listToDto(repository.findAll(Sort.by(Sort.Direction.DESC, "created")));
+	public Page<UserDTO> findAll(Pageable page, UserFilter userFilter) {
+	    Specification<User> spec = UserSpecification.filterBy(userFilter);
+	    Page<User> entities = repository.findAll(spec, page);
+		List<UserDTO> dtos = mapper.listToDto(entities.getContent());
+		return new PageImpl<>(dtos, page, entities.getTotalElements());
 	}
 
 	private User monthEntity(User userSave, UserDTO userRequest) {
+		userSave.setEmail(userRequest.getEmail());
 		userSave.setNick(userRequest.getNick());
 		userSave.setEmail(userRequest.getEmail());
+		userSave.setUpdated(LocalDateTime.now());
+		userSave.setRoles(roleMapper.toEntity(userRequest.getRoles()));
 		return userSave;
 	}
 	
@@ -136,5 +137,14 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 	@Override
 	public UUID findUUidByNick(String nick) {
 		return findByNick(nick).getUuid();
+	}
+
+	@Override
+	public UserDTO updateNickAndPassword(UUID id, MinUserDTO minUserDTO) {
+		User updatedUser = findById(id);
+		updatedUser.setNick(minUserDTO.getNick());
+		updatedUser.setPassword(generateHashdPassword(minUserDTO.getPassword()));
+		return mapper.toDto(repository.save(updatedUser));
+		
 	}
 }

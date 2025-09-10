@@ -28,5 +28,4 @@ public class ResourceExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
     }
 
-    
 }

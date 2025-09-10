@@ -9,7 +9,6 @@ import java.util.List;
 import com.auth.api.models.base.IdBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.FetchType;
@@ -67,7 +66,7 @@ public class User extends IdBase implements UserDetails {
 	
 	public User() {}
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "users_roles", schema = "auth", joinColumns = { @JoinColumn(name = "user_uuid") }, inverseJoinColumns = {
 			@JoinColumn(name = "roles_uuid") })
 	private List<Role> roles;
