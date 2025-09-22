@@ -1,7 +1,6 @@
 package com.auth.api.models;
 
 import java.io.Serial;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +18,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -49,13 +47,7 @@ public class User extends IdBase implements UserDetails {
 	@NotBlank
 	@Size(min = 5, message = "Password tem que ter um minimo de 5")
 	private String password;
-
-	@Column(nullable = false, updatable = false)
-	@CreationTimestamp
-	private LocalDateTime created;
-
-	private LocalDateTime updated;
-
+	
 	@Column(name = "account_non_expired")
 	private Boolean accountNonExpired;
 

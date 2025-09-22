@@ -6,6 +6,7 @@ import com.auth.api.models.User;
 import com.auth.api.repository.IUserReposotiry;
 import com.auth.api.security.jwt.JwtTokenProvider;
 import com.auth.api.service.IAuthService;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +59,10 @@ public class AuthServiceImpl implements IAuthService {
 
 	public static boolean parametersAreInvalid(String nick, String refreshToken) {
 		return StringUtils.isBlank(nick) || StringUtils.isBlank(refreshToken);
+	}
+
+	@Override
+	public DecodedJWT getDecodedToken() {
+		return jwtTokenProvider.decodedToken();
 	}
 }

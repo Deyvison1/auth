@@ -9,7 +9,10 @@ import com.auth.api.mapper.UserMapper;
 import com.auth.api.models.User;
 import com.auth.api.repository.IUserReposotiry;
 import com.auth.api.repository.UserSpecification;
+import com.auth.api.service.IAuthService;
 import com.auth.api.service.IUserService;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -41,9 +44,6 @@ public class UserServiceImpl implements IUserService, UserDetailsService {
 
 	@Value("${default-role.description}")
 	private String descriptionRoleDefault;
-
-	@Value("${default-role.uuid}")
-	private UUID uuidRoleDefault;
 
 	private final IUserReposotiry repository;
 	private final UserMapper mapper;

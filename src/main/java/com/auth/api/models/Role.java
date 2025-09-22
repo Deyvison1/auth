@@ -1,6 +1,5 @@
 package com.auth.api.models;
 
-
 import java.io.Serial;
 import java.util.Objects;
 
@@ -22,7 +21,7 @@ public class Role extends IdBase implements GrantedAuthority {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
-	
+
 	@NotBlank
 	private String name;
 	@NotBlank
@@ -33,12 +32,10 @@ public class Role extends IdBase implements GrantedAuthority {
 		return "ROLE_" + name;
 	}
 
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(description, name);
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -51,5 +48,5 @@ public class Role extends IdBase implements GrantedAuthority {
 		Role other = (Role) obj;
 		return Objects.equals(description, other.description) && Objects.equals(name, other.name);
 	}
-	
+
 }

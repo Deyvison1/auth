@@ -2,7 +2,6 @@ package com.auth.api.dto;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -23,10 +22,6 @@ public class UserDTO extends BaseDTO implements Serializable {
 
 	private String fullName;
 	private String password;
-
-	private LocalDateTime created;
-
-	private LocalDateTime updated;
 
 	private Boolean accountNonExpired;
 

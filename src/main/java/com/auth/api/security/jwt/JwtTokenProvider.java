@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.auth.api.dto.security.TokenDTO;
 import com.auth.api.exception.InvalidJwtAuthenticationException;
@@ -94,6 +96,26 @@ public class JwtTokenProvider {
 
 	private static boolean refreshTokenContainsBearer(String refreshToken) {
 		return StringUtils.isNotBlank(refreshToken) && refreshToken.startsWith("Bearer ");
+	}
+	
+	public DecodedJWT decodedToken() {
+		String token = getToken();
+		Algorithm alg = Algorithm.HMAC256(secretKey.getBytes());
+		JWTVerifier verifier = JWT.require(alg).build();
+		return verifier.verify(token);
+	}
+
+	public String getToken() {
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+		HttpServletRequest request = attrs.getRequest();
+		String token = request.getHeader("Authorization");
+
+		if (token != null && token.startsWith("Bearer ")) {
+			token = token.substring(7); // remove "Bearer "
+		}
+		return token;
+
 	}
 	
 	public boolean validateToken(String token) {
